@@ -53,13 +53,11 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.PASSWORD }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        run: terraform apply -auto-approve -var="appId=${{ env.AZURE_CLIENT_ID }}" -var="password=${{ env.PASSWORD }}"
-
+        run: |
+          terraform apply -auto-approve \
+            -var="appId=${{ secrets.AZURE_CLIENT_ID }}" \
+            -var="password=${{ secrets.PASSWORD }}" \
+            -var="tenantId=${{ secrets.AZURE_TENANT_ID }}"
 
       - name: Terraform Output
         run: terraform output
