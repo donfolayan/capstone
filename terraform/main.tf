@@ -106,19 +106,3 @@ resource "azurerm_kubernetes_cluster" "capstone-aks" {
     environment = "capstone_project"
   }
 }
-
-# resource "null_resource" "get_kubeconfig" {
-#   depends_on = [azurerm_kubernetes_cluster.capstone-aks]
-
-#   provisioner "local-exec" {
-#     command = "az aks get-credentials --resource-group sockshop_capstone-rg --name ${azurerm_kubernetes_cluster.capstone-aks.name}"
-#   }
-# }
-
-# resource "null_resource" "apply_k8s_manifest" {
-#   depends_on = [null_resource.get_kubeconfig]
-
-#   provisioner "local-exec" {
-#     command = "kubectl apply -f ./kubernetes/manifest.yml"
-#   }
-# }
