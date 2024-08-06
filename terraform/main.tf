@@ -96,8 +96,8 @@ resource "azurerm_kubernetes_cluster" "capstone-aks" {
   }
 
   service_principal {
-    client_id     = ${{ secrets.AZURE_CLIENT_ID }}
-    client_secret = ${{ secrets.PASSWORD }}
+    client_id     = var.client_id
+    client_secret = var.client_secret
   }
 
   role_based_access_control_enabled = true
