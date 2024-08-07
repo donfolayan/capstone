@@ -89,6 +89,10 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+
+      - name: Terraform Destroy
+        if: steps.apply.outcome == 'failure'
+        run: terraform destroy --auto-approve
           
       - name: Terraform Output
         id: output
