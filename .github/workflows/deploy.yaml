@@ -94,10 +94,7 @@ jobs:
         run: terraform output -json > outputs.json
 
       - name: Clean JSON File
-        run: sed -i 's/\$//g' outputs.json
-
-      - name: Show Outputs
-        run: cat outputs.json
+        run: tr -cd '\11\12\15\40-\176' < outputs.json > cleaned_outputs.json && mv cleaned_outputs.json outputs.json
 
       - name: Check JSON Formatting
         run: cat -A outputs.json
