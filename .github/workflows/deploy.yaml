@@ -97,8 +97,8 @@ jobs:
       - name: Terraform Output
         id: output
         run: |
-          terraform output -json > outputs.json
-          echo "aks_cluster_name=$(jq -r .kubernetes_cluster_name.value outputs.json)" >> $GITHUB_ENV
+          terraform output > outputs.txt
+          echo "aks_cluster_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk '{print $3}')" >> $GITHUB_ENV
 
       - name: AKS Monitoring Enabler
         run: |
