@@ -41,7 +41,7 @@ jobs:
 
       - name: Assign Permissions to Service Principal
         run: |
-          az keyvault set-policy --name "sockshop" --spn ${{ secrets.AZURE_CLIENT_ID }} --secret-permissions get set list delete
+          az role assignment create --role "Key Vault Secrets Officer" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg/providers/Microsoft.KeyVault/vaults/sockshop
 
       - name: Store Secrets in Key Vault
         run: |
