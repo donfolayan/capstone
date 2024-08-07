@@ -46,6 +46,11 @@ data "azurerm_key_vault_secret" "password" {
   key_vault_id = data.azurerm_key_vault.keyvault.id
 }
 
+data "azurerm_key_vault_secret" "subscription_id" {
+  name         = "subscription-id"
+  key_vault_id = data.azurerm_key_vault.keyvault.id
+}
+
 # Generate a random integer for unique resource naming
 resource "random_integer" "num" {
   min = 10
@@ -53,14 +58,24 @@ resource "random_integer" "num" {
 }
 
 # Resource Group
-# resource "azurerm_resource_group" "rg" {
-#   name     = "sockshop_capstone-rg"
-#   location = "East US 2"
+resource "azurerm_resource_group" "rg" {
+  name     = "sockshop_capstone-rg"
+  location = "East US 2"
 
-#   tags = {
-#     environment = "capstone_project"
-#   }
-# }
+  tags = {
+    environment = "capstone_project"
+  }
+}
+
+resource "null_resource" "import_rg" {
+  provisioner "local-exec" {
+    command = "terraform import azurerm_resource_group.rg /subscriptions/${data.azurerm_key_vault_secret.subscription_id}/resourceGroups/sockshop_capstone-rg"
+  }
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+}
 
 # Network Security Group
 resource "azurerm_network_security_group" "capstone-nsg" {

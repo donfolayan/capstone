@@ -51,7 +51,7 @@ jobs:
         run: |
           az keyvault secret set --vault-name "sockshop" --name "client-id" --value "${{ secrets.AZURE_CLIENT_ID }}"
           az keyvault secret set --vault-name "sockshop" --name "password" --value "${{ secrets.PASSWORD }}"
-          az keyvault secret set --vault-name "sockshop" --name "tenant-id" --value "${{ secrets.AZURE_TENANT_ID }}"
+          az keyvault secret set --vault-name "sockshop" --name "subscription-id" --value "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
       - name: Get Key Vault ID
         id: get_kv_id
@@ -66,8 +66,6 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-
-      - name: Terraform Import
         run: |
           terraform import azurerm_resource_group.rg /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg
       
