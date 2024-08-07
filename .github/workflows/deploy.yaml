@@ -113,6 +113,6 @@ jobs:
           helm repo update
           helm install prometheus prometheus-community/prometheus
       
-      # - name: Terraform Destroy
-      #   if: failure()
-      #   run: terraform destroy --auto-approve
+      - name: Terraform Destroy
+        if: failure()
+        run: terraform destroy --auto-approve
