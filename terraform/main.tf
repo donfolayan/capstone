@@ -69,7 +69,7 @@ resource "azurerm_resource_group" "rg" {
 
 resource "null_resource" "import_rg" {
   provisioner "local-exec" {
-    command = "terraform import azurerm_resource_group.rg /subscriptions/${data.azurerm_key_vault_secret.subscription_id}/resourceGroups/sockshop_capstone-rg"
+    command = "terraform import azurerm_resource_group.rg /subscriptions/${data.azurerm_key_vault_secret.subscription_id.value}/resourceGroups/sockshop_capstone-rg"
   }
 
   triggers = {
