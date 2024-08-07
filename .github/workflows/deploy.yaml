@@ -88,13 +88,15 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        run: terraform destroy -auto-approve
+        run: terraform apply -auto-approve
           
       - name: Terraform Output
         run: terraform output
 
       - name: Install Ingress
         run: |
+          set +e
+          az aks get-credentials --resource-group sockshop_capstone-rg --name capstone-aks
           kubectl create namespace ingress-nginx
           echo "$(kubectl get namespace)"
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -103,6 +105,7 @@ jobs:
           --namespace ingress \
           --set controller.ingressClassResource.name=nginx
           watch kubectl -n ingress get svc
+          set -e
           
       - name: Install Prometheus
         run: |
