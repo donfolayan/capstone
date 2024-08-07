@@ -98,7 +98,7 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk -F' = ' '{print $2}' | tr -d ' "')
+          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | sed 's/.*= *//; s/"//g')
           echo "Extracted AKS Name: '$aks_name'"  # Debugging line
           if [ -n "$aks_name" ]; then
               echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
