@@ -98,14 +98,18 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | sed 's/.*= *//; s/"//g')
-          echo "Extracted AKS Name: '$aks_name'"  # Debugging line
+          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk -F' = ' '{print $2}' | tr -d ' "\n')
+          
+          # Remove leading single quote if present
+          aks_name=${aks_name#\'}
+
+          echo "Extracted AKS Name: '$aks_name'"
+          
           if [ -n "$aks_name" ]; then
               echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
           else
               echo "Warning: kubernetes_cluster_name not found." >&2
           fi
-
       - name: AKS Monitoring Enabler
         run: |
           az aks get-credentials -n "${{ env.aks_cluster_name }}" -g "sockshop_capstone-rg"
