@@ -91,19 +91,15 @@ jobs:
         run: terraform apply -auto-approve
           
       - name: Terraform Output
-        run: terraform output > outputs.txt
+        run: terraform output -json > outputs.json
 
       - name: Show Outputs
-        run: cat outputs.txt
+        run: cat outputs.json
 
       - name: Set Environment Variables
         run: |
-          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk -F' = ' '{print $2}' | tr -d ' "\n' | head -n 1)
-          
-          # Remove any unwanted characters
-          aks_name=$(echo "$aks_name" | sed 's/%0A//g')
-          
-          echo "Extracted AKS Name: '$aks_name'"  # Debugging line
+          aks_name=$(jq -r '.kubernetes_cluster_name.value' outputs.json)
+          echo "Extracted AKS Name: '$aks_name'"
           
           if [ -n "$aks_name" ]; then
               echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
