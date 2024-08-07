@@ -1,20 +1,22 @@
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: destroy-aks-cluster
-spec:
-  template:
-    spec:
-      containers:
-      - name: destroy-aks
-        image: mcr.microsoft.com/azuredocs/azure-cli
-        command: ["/bin/bash", "-c"]
-        args:
-          - |
-            echo "Logging into Azure..."
-            az login --service-principal -u $AZURE_CLIENT_ID -p $PASSWORD --tenant $AZURE_TENANT_ID
+name: Destroy AKS Cluster
 
-            echo "Deleting resource group..."
-            az group delete --name sockshop_capstone-rg --yes --no-wait
-      restartPolicy: Never
-  backoffLimit: 4
+on:
+  workflow_dispatch:  # Allows manual triggering via the GitHub UI
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Delete Resource Group
+        run: |
+          az group delete --name sockshop_capstone-rg --yes --no-wait
