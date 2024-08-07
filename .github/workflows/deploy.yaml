@@ -96,6 +96,7 @@ jobs:
       - name: Install Ingress
         run: |
           kubectl create namespace ingress-nginx
+          echo "$(kubectl get namespace)"
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
           helm install ingress-nginx ingress-nginx/ingress-nginx  \
@@ -109,6 +110,6 @@ jobs:
           helm repo update
           helm install prometheus prometheus-community/prometheus
       
-      - name: Terraform Destroy
-        if: failure()
-        run: terraform destroy --auto-approve
+      # - name: Terraform Destroy
+      #   if: failure()
+      #   run: terraform destroy --auto-approve
