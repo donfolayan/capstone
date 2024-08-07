@@ -96,7 +96,7 @@ jobs:
       - name: Set Environment Variables From Terraform Output
         id: output
         run: |
-          echo "kubernetes_cluster_name=$(terraform output -raw kubernetes_cluster_name)" >> $GITHUB_ENV
+          echo "kubernetes_cluster_name=$(terraform output kubernetes_cluster_name)" >> $GITHUB_ENV
           
       - name: AKS Monitoring Enabler
         run: |
