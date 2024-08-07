@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: destroy-aks-cluster
+spec:
+  template:
+    spec:
+      containers:
+      - name: destroy-aks
+        image: mcr.microsoft.com/azuredocs/azure-cli
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Logging into Azure..."
+            az login --service-principal -u $AZURE_CLIENT_ID -p $PASSWORD --tenant $AZURE_TENANT_ID
+
+            echo "Deleting resource group..."
+            az group delete --name sockshop_capstone-rg --yes --no-wait
+      restartPolicy: Never
+  backoffLimit: 4
