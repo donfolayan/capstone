@@ -97,6 +97,8 @@ jobs:
         run: |
           az aks get-credentials --resource-group sockshop_capstone-rg --name capstone-aks
           kubectl apply -f ./application/manifest.yaml
+          pwd 
+          ls
 
       - name: Install Ingress
         run: |
