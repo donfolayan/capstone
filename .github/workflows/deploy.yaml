@@ -37,7 +37,7 @@ jobs:
 
       - name: Create Key Vault
         run: |
-          az keyvault create --name "sockshop" --resource-group sockshop_capstone-rg --location <your-location> || echo "Key Vault already exists"
+          az keyvault create --name "sockshop" --resource-group sockshop_capstone-rg --location "East US 2" || echo "Key Vault already exists"
 
       - name: Assign Permissions to Service Principal
         run: |
