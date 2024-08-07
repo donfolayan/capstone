@@ -34,7 +34,7 @@ jobs:
       - name: Create Resource Group (if not exists)
         run: |
           az group create --name sockshop_capstone-rg --location "East US 2"
-
+        
       - name: Assign User Access Administrator Role
         run: |
           az role assignment create --role "User Access Administrator" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}
