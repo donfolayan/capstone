@@ -98,11 +98,11 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk -F' = ' '{print $2}' | tr -d ' "\n')
+          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk -F' = ' '{print $2}' | tr -d ' "\n' | head -n 1)
           
-          # Remove leading/trailing unwanted characters
-          aks_name=$(echo "$aks_name" | sed 's/^"//; s/"$//; s/%0A//g')
-
+          # Remove any unwanted characters
+          aks_name=$(echo "$aks_name" | sed 's/%0A//g')
+          
           echo "Extracted AKS Name: '$aks_name'"  # Debugging line
           
           if [ -n "$aks_name" ]; then
@@ -110,6 +110,7 @@ jobs:
           else
               echo "Warning: kubernetes_cluster_name not found." >&2
           fi
+          
       - name: AKS Monitoring Enabler
         run: |
           az aks get-credentials -n "${{ env.aks_cluster_name }}" -g "sockshop_capstone-rg"
