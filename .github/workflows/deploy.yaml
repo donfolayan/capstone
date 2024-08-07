@@ -96,6 +96,7 @@ jobs:
       - name: AKS Monitoring Enabler
         run: |
           cluster_name=$(terraform output kubernetes_cluster_name | tr -d '"')
+          echo "Cluster Name: $cluster_name"
           az aks get-credentials -n "$cluster_name" -g "sockshop_capstone-rg"
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo add grafana https://grafana.github.io/helm-charts
