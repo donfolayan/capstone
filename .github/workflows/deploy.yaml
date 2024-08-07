@@ -66,6 +66,10 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+
+      - name: Terraform Import
+        run: |
+          terraform import azurerm_resource_group.rg /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg
       
       - name: Terraform Validate
         id: validate

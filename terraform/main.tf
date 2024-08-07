@@ -53,14 +53,14 @@ resource "random_integer" "num" {
 }
 
 # Resource Group
-resource "azurerm_resource_group" "rg" {
-  name     = "sockshop_capstone-rg"
-  location = "East US 2"
+# resource "azurerm_resource_group" "rg" {
+#   name     = "sockshop_capstone-rg"
+#   location = "East US 2"
 
-  tags = {
-    environment = "capstone_project"
-  }
-}
+#   tags = {
+#     environment = "capstone_project"
+#   }
+# }
 
 # Network Security Group
 resource "azurerm_network_security_group" "capstone-nsg" {
