@@ -91,26 +91,12 @@ jobs:
         run: terraform apply -auto-approve
           
       - name: Terraform Output
-        run: terraform output -json > outputs.json
+        run: terraform output
 
-      - name: Clean JSON File
-        run: tr -cd '\11\12\15\40-\176' < outputs.json > cleaned_outputs.json && mv cleaned_outputs.json outputs.json
-
-      - name: Check JSON Formatting
-        run: cat -A outputs.json
-
-      - name: Validate JSON
-        run: jq . outputs.json
-
-      - name: Set Environment Variables
+      - name: Set Environment Variables From Terraform Output
+        id: output
         run: |
-          aks_name=$(jq -r '.kubernetes_cluster_name.value' outputs.json)
-          echo "Extracted AKS Name: '$aks_name'"
-          if [ -n "$aks_name" ]; then
-           echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
-          else
-          echo "Warning: kubernetes_cluster_name not found." >&2
-          fi
+          echo "kubernetes_cluster_name=$(terraform output -raw kubernetes_cluster_name)" >> $GITHUB_ENV
           
       - name: AKS Monitoring Enabler
         run: |
