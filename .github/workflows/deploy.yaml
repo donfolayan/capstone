@@ -96,9 +96,9 @@ jobs:
       - name: Apply Application Manifests
         run: |
           pwd
-          ls
+          ls ./..
           az aks get-credentials --resource-group sockshop_capstone-rg --name capstone-aks
-          kubectl apply -f ./application/manifest.yaml
+          kubectl apply -f ../application/manifest.yaml
 
       - name: Install Ingress
         run: |
