@@ -103,7 +103,6 @@ jobs:
           helm install ingress-nginx ingress-nginx/ingress-nginx  \
           --namespace ingress-nginx \
           --set controller.ingressClassResource.name=nginx
-          watch kubectl -n ingress-nginx get svc
           
       - name: Install Prometheus
         run: |
