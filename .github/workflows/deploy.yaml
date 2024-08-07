@@ -22,14 +22,37 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.1.0
-        
+        uses: actions/checkout@v3
+
       - name: 'Az CLI login'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group (if not exists)
+        run: |
+          az group create --name sockshop_capstone-rg --location <your-location>
+
+      - name: Create Key Vault
+        run: |
+          az keyvault create --name "sockshop" --resource-group sockshop_capstone-rg --location <your-location> || echo "Key Vault already exists"
+
+      - name: Assign Permissions to Service Principal
+        run: |
+          az keyvault set-policy --name "sockshop" --spn ${{ secrets.AZURE_CLIENT_ID }} --secret-permissions get set list delete
+
+      - name: Store Secrets in Key Vault
+        run: |
+          az keyvault secret set --vault-name "sockshop" --name "client-id" --value "${{ secrets.AZURE_CLIENT_ID }}"
+          az keyvault secret set --vault-name "sockshop" --name "password" --value "${{ secrets.PASSWORD }}"
+          az keyvault secret set --vault-name "sockshop" --name "tenant-id" --value "${{ secrets.AZURE_TENANT_ID }}"
+
+      - name: Get Key Vault ID
+        id: get_kv_id
+        run: |
+          echo "keyvault_id=$(az keyvault show --name sockshop --query id -o tsv)" >> $GITHUB_ENV
   
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2.0.2
@@ -53,20 +76,19 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        env:
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.PASSWORD }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        run: terraform apply -auto-approve -var="appId=${{ env.AZURE_CLIENT_ID }}" -var="password=${{ env.PASSWORD }}"
-
-
+        run: |
+          terraform apply -auto-approve \
+            -var="keyvault_id=${{ env.keyvault_id }}"
+          
       - name: Terraform Output
-        run: terraform output
+        id: output
+        run: |
+          terraform output -json > outputs.json
+          echo "aks_cluster_name=$(jq -r .kubernetes_cluster_name.value outputs.json)" >> $GITHUB_ENV
 
       - name: AKS Monitoring Enabler
         run: |
-          az aks get-credentials -n "cluster-definite-seahorse" -g "rg-hip-urchin"
+          az aks get-credentials -n ""${{ env.aks_cluster_name }}"" -g "sockshop_capstone-rg"
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo add grafana https://grafana.github.io/helm-charts
           helm repo update
