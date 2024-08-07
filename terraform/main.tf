@@ -96,7 +96,7 @@ resource "azurerm_virtual_network" "capstone-network" {
 
 # Azure Kubernetes Service
 resource "azurerm_kubernetes_cluster" "capstone-aks" {
-  name                = "capstone-${random_integer.num.id}-aks"
+  name                = "capstone-aks"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "${random_integer.num.id}-k8s"
