@@ -31,15 +31,19 @@ provider "helm" {
   }
 }
 
+data "azurerm_key_vault" "keyvault" {
+  name                = "sockshop"
+  resource_group_name = "sockshop_capstone-rg"
+}
 
 data "azurerm_key_vault_secret" "client_id" {
   name         = "client-id"
-  key_vault_id = var.keyvault_id
+  key_vault_id = data.azurerm_key_vault.keyvault.id
 }
 
 data "azurerm_key_vault_secret" "password" {
   name         = "password"
-  key_vault_id = var.keyvault_id
+  key_vault_id = data.azurerm_key_vault.keyvault.id
 }
 
 # Generate a random integer for unique resource naming
@@ -107,8 +111,8 @@ resource "azurerm_kubernetes_cluster" "capstone-aks" {
   }
 
   service_principal {
-    client_id     = var.client_id
-    client_secret = var.password
+    client_id     = data.azurerm_key_vault_secret.client_id.value
+    client_secret = data.azurerm_key_vault_secret.password.value
   }
 
   role_based_access_control_enabled = true
