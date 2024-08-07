@@ -95,7 +95,6 @@ jobs:
 
       - name: Install Ingress
         run: |
-          set +e
           az aks get-credentials --resource-group sockshop_capstone-rg --name capstone-aks
           kubectl create namespace ingress-nginx
           echo "$(kubectl get namespace)"
@@ -105,7 +104,6 @@ jobs:
           --namespace ingress-nginx \
           --set controller.ingressClassResource.name=nginx
           watch kubectl -n ingress-nginx get svc
-          set -e
           
       - name: Install Prometheus
         run: |
