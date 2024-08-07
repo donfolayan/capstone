@@ -92,21 +92,11 @@ jobs:
           
       - name: Terraform Output
         run: terraform output
-
-      - name: Set Environment Variables from Terraform Outputs
-        run: |
-          cluster_name=$(terraform output kubernetes_cluster_name | tr -d '"')
-          if [ -n "$cluster_name" ]; then
-            echo "kubernetes_cluster_name=${cluster_name}" >> $GITHUB_ENV
-          else
-            echo "Error: Unable to retrieve the Kubernetes cluster name." >&2
-            exit 1
-          fi
-          terraform output kubernetes_cluster_name
           
       - name: AKS Monitoring Enabler
         run: |
-          az aks get-credentials -n "${{ env.aks_cluster_name }}" -g "sockshop_capstone-rg"
+          cluster_name=$(terraform output kubernetes_cluster_name | tr -d '"')
+          az aks get-credentials -n "$cluster_name" -g "sockshop_capstone-rg"
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo add grafana https://grafana.github.io/helm-charts
           helm repo update
