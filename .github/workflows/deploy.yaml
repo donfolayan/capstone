@@ -91,10 +91,19 @@ jobs:
         run: terraform apply -auto-approve
           
       - name: Terraform Output
-        id: output
+        run: terraform output > outputs.txt
+
+      - name: Show Outputs
+        run: cat outputs.txt
+
+      - name: Set Environment Variables
         run: |
-          terraform output > outputs.txt
-          echo "aks_cluster_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk '{print $3}')" >> $GITHUB_ENV
+          aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk -F' = ' '{print $2}' | tr -d '"')
+          if [ -n "$aks_name" ]; then
+              echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
+          else
+              echo "Warning: kubernetes_cluster_name not found." >&2
+          fi
 
       - name: AKS Monitoring Enabler
         run: |
