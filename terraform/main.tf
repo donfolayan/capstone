@@ -65,11 +65,9 @@ resource "azurerm_resource_group" "rg" {
 
 # Network Security Group
 resource "azurerm_network_security_group" "capstone-nsg" {
-  name                = "capstone-security-group"
+  name                = "capstone-security-group-${random_integer.num.id}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-
-  # Define security rules here if needed
 }
 
 # Virtual Network
