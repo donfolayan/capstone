@@ -93,9 +93,13 @@ jobs:
       - name: Terraform Output
         run: terraform output
 
-      - name: Install Ingress
+      - name: Apply Application Manifests
         run: |
           az aks get-credentials --resource-group sockshop_capstone-rg --name capstone-aks
+          kubectl apply -f ../manifests/
+
+      - name: Install Ingress
+        run: |
           kubectl create namespace ingress-nginx
           echo "$(kubectl get namespace)"
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
