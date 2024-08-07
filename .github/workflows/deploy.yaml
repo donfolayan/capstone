@@ -100,10 +100,10 @@ jobs:
         run: |
           aks_name=$(grep 'kubernetes_cluster_name' outputs.txt | awk -F' = ' '{print $2}' | tr -d ' "\n')
           
-          # Remove leading single quote if present
-          aks_name=${aks_name#\'}
+          # Remove leading/trailing unwanted characters
+          aks_name=$(echo "$aks_name" | sed 's/^"//; s/"$//; s/%0A//g')
 
-          echo "Extracted AKS Name: '$aks_name'"
+          echo "Extracted AKS Name: '$aks_name'"  # Debugging line
           
           if [ -n "$aks_name" ]; then
               echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
