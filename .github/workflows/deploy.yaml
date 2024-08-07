@@ -93,6 +93,9 @@ jobs:
       - name: Terraform Output
         run: terraform output -json > outputs.json
 
+      - name: Clean JSON File
+        run: sed -i 's/\$//g' outputs.json
+
       - name: Show Outputs
         run: cat outputs.json
 
