@@ -96,15 +96,20 @@ jobs:
       - name: Show Outputs
         run: cat outputs.json
 
+      - name: Check JSON Formatting
+        run: cat -A outputs.json
+
+      - name: Validate JSON
+        run: jq . outputs.json
+
       - name: Set Environment Variables
         run: |
           aks_name=$(jq -r '.kubernetes_cluster_name.value' outputs.json)
           echo "Extracted AKS Name: '$aks_name'"
-          
           if [ -n "$aks_name" ]; then
-              echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
+           echo "aks_cluster_name=$aks_name" >> $GITHUB_ENV
           else
-              echo "Warning: kubernetes_cluster_name not found." >&2
+          echo "Warning: kubernetes_cluster_name not found." >&2
           fi
           
       - name: AKS Monitoring Enabler
