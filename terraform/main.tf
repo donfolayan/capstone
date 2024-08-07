@@ -61,20 +61,6 @@ resource "random_integer" "num" {
 resource "azurerm_resource_group" "rg" {
   name     = "sockshop_capstone-rg"
   location = "East US 2"
-
-  tags = {
-    environment = "capstone_project"
-  }
-}
-
-resource "null_resource" "import_rg" {
-  provisioner "local-exec" {
-    command = "terraform import azurerm_resource_group.rg /subscriptions/${data.azurerm_key_vault_secret.subscription_id.value}/resourceGroups/sockshop_capstone-rg"
-  }
-
-  triggers = {
-    always_run = "${timestamp()}"
-  }
 }
 
 # Network Security Group
