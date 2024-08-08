@@ -102,19 +102,27 @@ jobs:
 
       - name: Install Ingress
         run: |
-          kubectl create namespace ingress-nginx
+          kubectl create namespace sock-shop
           echo "$(kubectl get namespace)"
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
           helm install ingress-nginx ingress-nginx/ingress-nginx  \
-          --namespace ingress-nginx \
+          --namespace sock-shop \
           --set controller.ingressClassResource.name=nginx
           
       - name: Install Prometheus
         run: |
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
-          helm install prometheus prometheus-community/prometheus
+          helm install prometheus prometheus-community/prometheus --namespace sock-shop
+
+      - name: Install Grafana
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo list
+          helm repo update
+          helm install grafana grafana/grafana --namespace sock-shop
+          helm list -n sock-shop
       
       - name: Terraform Destroy
         if: failure()
