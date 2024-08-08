@@ -99,7 +99,6 @@ jobs:
 
       - name: Apply Application Manifests
         run: |
-          pwd
           ls ./..
           az aks get-credentials --resource-group sockshop_capstone-rg --name capstone-aks
           kubectl apply -f ../application/manifest.yaml
@@ -107,13 +106,7 @@ jobs:
       - name: Install Ingress
         run: |
           set -e
-          echo "$(kubectl get namespace)"
-          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-          helm repo update
-          helm install ingress-nginx ingress-nginx/ingress-nginx  \
-          --namespace sock-shop \
-          --namespace sock-shop \
-          --set controller.ingressClassResource.name=nginx
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/cloud/deploy.yaml
           set +e
           
       - name: Install Prometheus
