@@ -107,7 +107,7 @@ jobs:
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
           helm install ingress-nginx ingress-nginx/ingress-nginx  \
-          --namespace ingress-nginx \
+          --namespace sock-shop \
           --set controller.ingressClassResource.name=nginx
           
       - name: Install Prometheus
@@ -115,6 +115,15 @@ jobs:
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
           helm install prometheus prometheus-community/prometheus
+
+      - name: Install Grafana
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo list
+          helm repo update
+          helm install my-grafana grafana/grafana --namespace sock-shop
+          helm list -n sock-shop
+          kubectl get all -n monitoring
       
       - name: Terraform Destroy
         if: failure()
