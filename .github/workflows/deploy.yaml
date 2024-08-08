@@ -38,7 +38,7 @@ jobs:
       - name: Assign User Access Administrator Role
         run: |
           az role assignment create --role "User Access Administrator" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          
+
       - name: Create Resource Group (if not exists)
         run: |
           az group create --name sockshop_capstone-rg --location "East US 2"
@@ -106,7 +106,7 @@ jobs:
 
       - name: Install Ingress
         run: |
-          kubectl create namespace sock-shop
+          set -e
           echo "$(kubectl get namespace)"
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
@@ -114,20 +114,25 @@ jobs:
           --namespace sock-shop \
           --namespace sock-shop \
           --set controller.ingressClassResource.name=nginx
+          set +e
           
       - name: Install Prometheus
         run: |
+          set -e
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
           helm install prometheus prometheus-community/prometheus --namespace sock-shop
+          set +e
 
       - name: Install Grafana
         run: |
+          set -e
           helm repo add grafana https://grafana.github.io/helm-charts
           helm repo list
           helm repo update
           helm install grafana grafana/grafana --namespace sock-shop
           helm list -n sock-shop
+          set +e
       
       - name: Terraform Destroy
         if: failure()
