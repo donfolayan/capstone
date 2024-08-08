@@ -1,4 +1,4 @@
-name: Azure AKS Monitoring
+name: Azure AKS Destroy
 
 on:
   workflow_dispatch:
