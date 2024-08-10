@@ -28,5 +28,4 @@ jobs:
 
       - name: Delete Resource Group
         run: |
-          set -e
           az group delete --name sockshop_capstone-rg --yes --no-wait
