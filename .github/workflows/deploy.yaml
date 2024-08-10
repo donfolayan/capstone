@@ -126,6 +126,11 @@ jobs:
           helm install grafana grafana/grafana --namespace sock-shop
           helm list -n sock-shop
           set +e
+
+      - name: Apply Ingress and Rolebinding Configs
+        run: |
+          kubectl apply -f ../application/ingress.yaml
+          kubectl apply -f ../application/rolebinding.yaml
       
       - name: Terraform Destroy
         if: failure()
