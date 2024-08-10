@@ -3,15 +3,8 @@ kind: Ingress
 metadata:
   name: sockshop-ingress
   namespace: sock-shop
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    # cert-manager.io/cluster-issuer: letsencrypt-nginx
 spec:
   ingressClassName: nginx
-  # tls:
-  #   - hosts:
-  #       - capstone.donfolayan.com
-  #     secretName: letsencrypt-nginx-htnxv
   rules:
     - host: capstone.donfolayan.com
       http:
