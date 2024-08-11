@@ -134,21 +134,6 @@ jobs:
           helm install grafana grafana/grafana --namespace sock-shop
           helm list -n sock-shop
           set +e
-
-      - name: Wait for Ingress NGINX Controller to be Ready
-        run: |
-          for i in {1..10}; do
-            kubectl get svc ingress-nginx-controller-admission -n ingress-nginx && break
-            echo "Waiting for Ingress NGINX Controller webhook service to be ready..."
-            sleep 15
-          done
-
-      - name: Apply Ingress, Rolebinding Configs, Grafana Configs
-        run: |
-          kubectl apply -f ../application/ingress.yaml
-          kubectl apply -f ../application/rolebinding.yaml
-          kubectl apply -f ../application/grafana-ingress.yaml
-          kubectl apply -f ../application/grafana-service.yaml
       
       - name: Terraform Destroy
         if: failure()
