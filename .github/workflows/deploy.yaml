@@ -43,6 +43,15 @@ jobs:
         run: |
           az group create --name sockshop_capstone-rg --location "East US 2"
 
+      - name: Wait for Resource Group to be Ready
+        run: |
+          for i in {1..5}; do
+            az group exists --name sockshop_capstone-rg && break
+            echo "Waiting for Resource Group to be ready..."
+            sleep 10
+          done
+
+
       - name: Create Key Vault
         run: |
           az keyvault create --name "sockshop" --resource-group sockshop_capstone-rg --location "East US 2" || echo "Key Vault already exists"
