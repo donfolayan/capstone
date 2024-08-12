@@ -116,25 +116,38 @@ jobs:
           set -e
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/cloud/deploy.yaml 
           set +e
-          
-      - name: Install Prometheus
+
+      - name: Install Prometheus Stack
         run: |
-          set -e
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
-          helm install prometheus prometheus-community/prometheus --namespace sock-shop
-          set +e
+          helm install prometheus prometheus-community/kube-prometheus-stack --namespace sock-shop
 
-      - name: Install Grafana
+      # - name: Install Prometheus
+      #   run: |
+      #     set -e
+      #     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+      #     helm repo update
+      #     helm install prometheus prometheus-community/prometheus --namespace sock-shop
+      #     set +e
+
+      # - name: Install Grafana
+      #   run: |
+      #     set -e
+      #     helm repo add grafana https://grafana.github.io/helm-charts
+      #     helm repo list
+      #     helm repo update
+      #     helm install grafana grafana/grafana --namespace sock-shop
+      #     helm list -n sock-shop
+      #     set +e
+
+      - name: Install Cert-Manager
         run: |
-          set -e
-          helm repo add grafana https://grafana.github.io/helm-charts
-          helm repo list
-          helm repo update
-          helm install grafana grafana/grafana --namespace sock-shop
-          helm list -n sock-shop
-          set +e
-      
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
+          helm repo add jetstack https://charts.jetstack.io --force-update
+          kubectl create namespace cert-manager
+          helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager -f ../application/cert-manager-values.yaml
+
       - name: Terraform Destroy
         if: failure()
         run: terraform destroy --auto-approve

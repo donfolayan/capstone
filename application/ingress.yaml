@@ -3,7 +3,13 @@ kind: Ingress
 metadata:
   name: sockshop-ingress
   namespace: sock-shop
+  annotations:
+    cert-manager.io/issuer: letsencrypt-prod
 spec:
+  tls:
+    - hosts:
+        - capstone.donfolayan.com
+      secretName: letsencrypt-prod
   ingressClassName: nginx
   rules:
     - host: capstone.donfolayan.com
