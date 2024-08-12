@@ -43,14 +43,6 @@ jobs:
         run: |
           az group create --name sockshop_capstone-rg --location "East US 2"
 
-      - name: Wait for Resource Group to be Ready
-        run: |
-          for i in {1..5}; do
-            az group exists --name sockshop_capstone-rg && break
-            echo "Waiting for Resource Group to be ready..."
-            sleep 10
-          done
-
       - name: Create Key Vault
         run: |
           az keyvault create --name "sockshop" --resource-group sockshop_capstone-rg --location "East US 2" || echo "Key Vault already exists"
@@ -58,6 +50,14 @@ jobs:
       - name: Assign Permissions to Service Principal
         run: |
           az role assignment create --role "Key Vault Secrets Officer" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg/providers/Microsoft.KeyVault/vaults/sockshop
+
+      - name: Wait for Key Vault to be Ready
+        run: |
+          for i in {1..5}; do
+            az keyvault show --name sockshop && break
+            echo "Waiting for Key Vault to be ready..."
+            sleep 10
+          done
 
       - name: Store Secrets in Key Vault
         run: |
@@ -82,10 +82,10 @@ jobs:
       - name: Import Resource
         id: import_rg
         run: |
-          set +e  # Disable exit on error
+          set +e
           terraform import azurerm_resource_group.rg /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg
           echo "Import step completed."
-          set -e  # Re-enable exit on error    
+          set -e 
     
       - name: Terraform Validate
         id: validate

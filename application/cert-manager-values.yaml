@@ -8,5 +8,5 @@ prometheus:
     annotations:
       kubernetes.io/ingress.class: nginx
     hosts:
-      - host: prometheus.donfolayan.com
+      - host: prometheus.donfolayan.me
         paths:

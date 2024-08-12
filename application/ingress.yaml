@@ -8,11 +8,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - capstone.donfolayan.com
+        - capstone.donfolayan.me
       secretName: letsencrypt-prod
   ingressClassName: nginx
   rules:
-    - host: capstone.donfolayan.com
+    - host: capstone.donfolayan.me
       http:
         paths:
           - pathType: Prefix
