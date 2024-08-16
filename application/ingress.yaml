@@ -9,6 +9,8 @@ spec:
   tls:
     - hosts:
         - capstone.donfolayan.me
+        - prometheus.donfolayan.me
+        - grafana.donfolayan.me
       secretName: letsencrypt-prod
   ingressClassName: nginx
   rules:

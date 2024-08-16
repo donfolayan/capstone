@@ -4,9 +4,15 @@ metadata:
   name: grafana-ingress
   namespace: sock-shop
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - grafana.donfolayan.me
+      secretName: letsencrypt-prod
   rules:
     - host: grafana.donfolayan.me
       http:
