@@ -54,7 +54,7 @@ jobs:
         run: |
           az role assignment create --role "Key Vault Secrets Officer" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg/providers/Microsoft.KeyVault/vaults/sockshop
           echo "Waiting for permissions to be assigned..."
-          sleep 20
+          sleep 10
 
       - name: Store Secrets in Key Vault
         run: |
@@ -126,7 +126,7 @@ jobs:
           helm repo add jetstack https://charts.jetstack.io --force-update
           kubectl create namespace cert-manager
           helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager -f ../application/certificate/cert-manager-values.yaml
-          echo "Waiting for Cert Manager pods to be ready..."
+          sleep 30
           kubectl wait --for=condition=ready pod --all -n cert-manager --timeout=5m
           echo "Cert Manager pods are ready."
 
