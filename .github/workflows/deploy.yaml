@@ -122,6 +122,13 @@ jobs:
           helm repo update
           helm install prometheus prometheus-community/kube-prometheus-stack --namespace sock-shop
 
+      - name: Install Cert-Manager
+        run: |
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
+          helm repo add jetstack https://charts.jetstack.io --force-update
+          kubectl create namespace cert-manager
+          helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager -f ../application/cert-manager-values.yaml
+
       - name: Apply Certificate, Ingress Files, Rolebinding
         run: |
           kubectl apply -f ../application/certificate.yaml
@@ -130,13 +137,6 @@ jobs:
           kubectl apply -f ../application/grafana-ingress.yaml
           kubectl apply -f ../application/prometheus-ingress.yaml
           kubectl apply -f ../application/rolebinding.yaml
-
-      - name: Install Cert-Manager
-        run: |
-          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
-          helm repo add jetstack https://charts.jetstack.io --force-update
-          kubectl create namespace cert-manager
-          helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager -f ../application/cert-manager-values.yaml
 
       - name: Terraform Destroy
         if: failure()
