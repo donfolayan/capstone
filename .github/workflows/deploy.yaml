@@ -44,8 +44,7 @@ jobs:
         run: |
           az keyvault create --name "sockshop" --resource-group sockshop_capstone-rg --location "East US 2" || echo "Key Vault already exists"
           set +e
-          for i in {1..5}; do
-            az keyvault show --name sockshop && break
+          while [[ $(az keyvault show --name sockshop --query "properties.provisioningState" -o tsv) != "Succeeded" ]]; do
             echo "Waiting for Key Vault to be ready..."
             sleep 10
           done
