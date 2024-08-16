@@ -11,7 +11,7 @@ spec:
         - capstone.donfolayan.me
         - prometheus.donfolayan.me
         - grafana.donfolayan.me
-      secretName: letsencrypt-prod
+      secretName: letsencrypt-prod-tls
   ingressClassName: nginx
   rules:
     - host: capstone.donfolayan.me

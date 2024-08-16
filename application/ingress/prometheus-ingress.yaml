@@ -1,9 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: grafana-ingress
+  name: prometheus-ingress
   namespace: sock-shop
   annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -11,16 +12,16 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - grafana.donfolayan.me
-      secretName: letsencrypt-prod
+        - prometheus.donfolayan.me
+      secretName: letsencrypt-prod-tls
   rules:
-    - host: grafana.donfolayan.me
+    - host: prometheus.donfolayan.me
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: prometheus-grafana
+                name: prometheus-kube-prometheus-prometheus
                 port:
-                  number: 80
+                  number: 9090

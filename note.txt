@@ -1,3 +1,0 @@
-Create ingress.yaml file
-applied the file - Expected result - ingress.networking.k8s.io/sockshop-ingress created
-

@@ -1,4 +1,4 @@
-name: Azure AKS Monitoring
+name: Azure AKS Deploy
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs: 
-  AKS-Cluster-Monitoring:
+  AKS-Cluster-Deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,12 +31,9 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Assign Contributor Role
+      - name: Assign Roles
         run: |
-          az role assignment create --role "Contributor" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Assign User Access Administrator Role
-        run: |
+          az role assignment create --role "Contributor" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }} 
           az role assignment create --role "User Access Administrator" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group (if not exists)
@@ -46,18 +43,17 @@ jobs:
       - name: Create Key Vault
         run: |
           az keyvault create --name "sockshop" --resource-group sockshop_capstone-rg --location "East US 2" || echo "Key Vault already exists"
-
-      - name: Assign Permissions to Service Principal
-        run: |
-          az role assignment create --role "Key Vault Secrets Officer" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg/providers/Microsoft.KeyVault/vaults/sockshop
-
-      - name: Wait for Key Vault to be Ready
-        run: |
+          set +e
           for i in {1..5}; do
             az keyvault show --name sockshop && break
             echo "Waiting for Key Vault to be ready..."
             sleep 10
           done
+          set -e
+
+      - name: Assign Permissions to Service Principal
+        run: |
+          az role assignment create --role "Key Vault Secrets Officer" --assignee ${{ secrets.AZURE_CLIENT_ID }} --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg/providers/Microsoft.KeyVault/vaults/sockshop
 
       - name: Store Secrets in Key Vault
         run: |
@@ -82,10 +78,8 @@ jobs:
       - name: Import Resource
         id: import_rg
         run: |
-          set +e
           terraform import azurerm_resource_group.rg /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/sockshop_capstone-rg
           echo "Import step completed."
-          set -e 
     
       - name: Terraform Validate
         id: validate
@@ -112,14 +106,12 @@ jobs:
 
       - name: Install Ingress
         run: |
-          set -e
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.1/deploy/static/provider/cloud/deploy.yaml 
           echo "Waiting for NGINX Ingress Controller to be ready..."
           kubectl wait --namespace ingress-nginx \
             --for=condition=ready pod \
             --selector=app.kubernetes.io/component=controller \
             --timeout=300s
-          set +e
 
       - name: Install Prometheus Stack
         run: |
@@ -132,16 +124,16 @@ jobs:
           kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.crds.yaml
           helm repo add jetstack https://charts.jetstack.io --force-update
           kubectl create namespace cert-manager
-          helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager -f ../application/cert-manager-values.yaml
+          helm install cert-manager --namespace cert-manager --version v1.15.2 jetstack/cert-manager -f ../application/certificate/cert-manager-values.yaml
 
       - name: Apply Certificate, Ingress Files, Rolebinding
         run: |
-          kubectl apply -f ../application/certificate.yaml
-          kubectl apply -f ../application/cert-issuer.yaml
-          kubectl apply -f ../application/ingress.yaml
-          kubectl apply -f ../application/grafana-ingress.yaml
-          kubectl apply -f ../application/prometheus-ingress.yaml
-          kubectl apply -f ../application/rolebinding.yaml
+          kubectl apply -f ../application/certificate/certificate.yaml
+          kubectl apply -f ../application/certificate/cert-issuer.yaml
+          kubectl apply -f ../application/ingress/ingress.yaml
+          kubectl apply -f ../application/ingress/grafana-ingress.yaml
+          kubectl apply -f ../application/ingress/prometheus-ingress.yaml
+          kubectl apply -f ../application/ingress/rolebinding.yaml
 
       - name: Terraform Destroy
         if: failure()
